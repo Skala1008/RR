@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLUTCH IQ — Cricket Pressure & Leverage Analytics Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-logo">⚡</div>
+        <div>
+          <div class="brand-title">CLUTCH <span class="highlight">IQ</span></div>
+          <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em;">QUANTITATIVE CRICKET INTELLIGENCE</div>
+        </div>
+        <span class="brand-badge">SUPERR SELECTOR S2</span>
+      </div>
+
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="leaderboard">🏆 Leaderboards</button>
+        <button class="nav-btn" data-tab="pvp">⚔️ Head-to-Head</button>
+        <button class="nav-btn" data-tab="timeline">📈 Match Explorer</button>
+        <button class="nav-btn" data-tab="weights">🎛️ What-If Weights</button>
+        <button class="nav-btn" data-tab="custom-stats">📊 Add More Stats</button>
+        <button class="nav-btn" data-tab="tier3">📋 Tier 3 Tags</button>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn btn-secondary btn-sm" href="final_master.html" style="text-decoration:none;">🏁 Final Master List</a>
+        <button class="btn btn-secondary btn-sm" onclick="window.ClutchApp.exportLeaderboardCSV()">📥 Export CSV</button>
+        <button class="btn btn-pink btn-sm" onclick="window.location.href='#custom-stat-studio'">+ New Stat</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero-banner">
+    <div class="container hero-grid">
+      <div class="hero-text">
+        <h1>Identify The Most Reliable Players <span style="background: linear-gradient(90deg, #00F2FE, #EA1B85); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Under Pressure</span></h1>
+        <p class="hero-subtitle">
+          Context-driven cricket rankings powered by ball-by-ball Win Probability Added (WPA), discrete Leverage Index (LI), opposition Elo calibration, and Empirical Bayes sample-size shrinkage.
+        </p>
+      </div>
+
+      <div class="hero-stats-pills">
+        <div class="stat-pill">
+          <span class="stat-pill-label">Deliveries Analyzed</span>
+          <span class="stat-pill-val">201,000</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-label">Matches Tracked</span>
+          <span class="stat-pill-val">883</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-label">Seasons</span>
+          <span class="stat-pill-val">2022-26</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main App Content Container -->
+  <main class="container" style="padding-top: 1.5rem;">
+
+    <!-- ==================== TAB 1: LEADERBOARD ==================== -->
+    <div id="view-leaderboard" class="tab-view">
+      
+      <!-- Era / Competition Selector Pills -->
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.25rem 0 0.5rem; background: rgba(0,0,0,0.3); padding: 0.35rem; border-radius: var(--radius-full); width: fit-content; border: 1px solid var(--border-color);">
+        <button id="era-btn-modern" class="role-pill-btn active" style="font-size: 0.825rem;" onclick="window.ClutchApp.switchEra('modern')">
+          ⚡ Modern Era (2022–2026 • T20I + IPL)
+        </button>
+        <button id="era-btn-alltime" class="role-pill-btn" style="font-size: 0.825rem;" onclick="window.ClutchApp.switchEra('alltime')">
+          👑 All-Time IPL (2008–2026 • 1,243 Matches)
+        </button>
+        <button id="era-btn-t20i" class="role-pill-btn" style="font-size: 0.825rem;" onclick="window.ClutchApp.switchEra('t20i')">
+          🌍 All-Time T20I (1,723 Matches • World Cups)
+        </button>
+      </div>
+
+      <!-- Top 10 Showcase Header & Role Switcher -->
+      <div class="section-title-wrap">
+        <div>
+          <h2 id="top-section-title">Top Performers in High-Leverage Moments</h2>
+          <p id="top-section-subtitle" style="font-size: 0.85rem; color: var(--text-muted);">Minimum 15+ high-pressure situations. Process-driven credit in winning and losing causes.</p>
+        </div>
+
+        <div class="role-switcher-pills">
+          <button class="role-pill-btn active" data-role="Batter">🏏 Batters Top 10</button>
+          <button class="role-pill-btn" data-role="Bowler">🎯 Bowlers Top 10</button>
+        </div>
+      </div>
+
+      <!-- Top 10 Cards Grid -->
+      <div id="top-cards-container" class="top-cards-grid">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+      <!-- Filter Controls Bar -->
+      <div class="controls-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Search player by name (e.g. Buttler, Rinku, Kuldeep, Bumrah)..." />
+        </div>
+
+        <div class="filter-selects-wrap">
+          <select id="confidence-filter-select" class="custom-select">
+            <option value="all">All Confidence Tiers</option>
+            <option value="gold">Gold (30+ Pressure Spots)</option>
+            <option value="silver">Silver (18 - 29 Spots)</option>
+            <option value="bronze">Bronze (10 - 17 Spots)</option>
+            <option value="provisional">Provisional (&lt;10 Spots)</option>
+          </select>
+
+          <button class="btn btn-secondary btn-sm" onclick="window.ClutchApp.exportLeaderboardCSV()">
+            Export Filtered
+          </button>
+        </div>
+      </div>
+
+      <!-- Master Ranking Table -->
+      <div class="table-container">
+        <table class="analytics-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player &amp; Role</th>
+              <th>Confidence</th>
+              <th>Clutch Score</th>
+              <th>adj lwWPA</th>
+              <th>Consistency</th>
+              <th>Big-Match</th>
+              <th>Phase Mastery</th>
+              <th>SR / Econ</th>
+              <th>Dots / Wkts</th>
+              <th id="custom-stat-header">CUSTOM</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-tbody">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ==================== TAB 2: HEAD-TO-HEAD (PvP) ==================== -->
+    <div id="view-pvp" class="tab-view" style="display: none; padding: 1.5rem 0;">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Head-to-Head Pressure Comparison</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Side-by-side comparative radar and pressure matrix across high-leverage domains.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+        <div class="form-group">
+          <label style="color: var(--accent-cyan); font-weight: 700;">Player 1 (Cyan Overlay)</label>
+          <select id="pvp-player-1-select" class="custom-select" style="width: 100%;"></select>
+        </div>
+        <div class="form-group">
+          <label style="color: var(--accent-pink); font-weight: 700;">Player 2 (Pink Overlay)</label>
+          <select id="pvp-player-2-select" class="custom-select" style="width: 100%;"></select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 2rem; align-items: center; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 2rem;">
+        <div style="display: flex; justify-content: center;">
+          <canvas id="pvp-radar-canvas" width="380" height="380" style="max-width: 100%;"></canvas>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 1rem;">Direct Comparative Matrix</h3>
+          <table class="analytics-table" style="background: rgba(0,0,0,0.2); border-radius: var(--radius-md);">
+            <thead>
+              <tr>
+                <th>Analytical Dimension</th>
+                <th style="color: var(--accent-cyan);">Player 1</th>
+                <th style="color: var(--accent-pink);">Player 2</th>
+              </tr>
+            </thead>
+            <tbody id="pvp-matrix-tbody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 3: MATCH PRESSURE EXPLORER ==================== -->
+    <div id="view-timeline" class="tab-view" style="display: none; padding: 1.5rem 0;">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Match Pressure &amp; Leverage Explorer</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Inspect delivery-by-delivery win probability swings and critical moments in iconic matches.</p>
+        </div>
+
+        <div style="min-width: 280px;">
+          <select id="match-explorer-select" class="custom-select" style="width: 100%;"></select>
+        </div>
+      </div>
+
+      <div id="match-timeline-container">
+        <!-- Rendered dynamically by timeline.js -->
+      </div>
+    </div>
+
+    <!-- ==================== TAB 4: WHAT-IF WEIGHT SANDBOX ==================== -->
+    <div id="view-weights" class="tab-view" style="display: none; padding: 1.5rem 0;">
+      <div class="section-title-wrap">
+        <div>
+          <h2>"What-If" Weight Customizer Sandbox</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Tune the algorithm's component weights in real time and see how rankings immediately re-order.</p>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="window.ClutchApp.resetWeights()">Reset to Recommended Weights</button>
+      </div>
+
+      <div id="weight-sliders-container" class="weights-sliders-grid" style="margin-bottom: 2rem;">
+        <!-- Sliders rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- ==================== TAB 5: ADD MORE STATS (CUSTOM STAT STUDIO) ==================== -->
+    <div id="view-custom-stats" class="tab-view" style="display: none; padding: 1.5rem 0;">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Custom Stat Studio &amp; Extensibility Engine</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Add new statistical metrics, custom mathematical formulas, and expand the platform's analytical reach.</p>
+        </div>
+      </div>
+
+      <!-- Form to Add More Stats Afterwards -->
+      <div class="custom-stat-card" id="custom-stat-studio">
+        <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: #fff;">Create a New Custom Statistic</h3>
+        <form onsubmit="window.ClutchApp.saveNewCustomStat(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Stat Display Name</label>
+              <input type="text" id="new-stat-name" class="form-control" placeholder="e.g. High-Stakes Boundary Rate" required />
+            </div>
+            <div class="form-group">
+              <label>Stat Code (2-4 letters)</label>
+              <input type="text" id="new-stat-code" class="form-control" placeholder="e.g. HSBR" maxlength="5" required />
+            </div>
+            <div class="form-group">
+              <label>Applies To</label>
+              <select id="new-stat-target" class="custom-select" style="width: 100%;">
+                <option value="Batter">Batters Only</option>
+                <option value="Bowler">Bowlers Only</option>
+                <option value="Universal">All Players</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Weight Contribution (%)</label>
+              <input type="number" id="new-stat-weight" class="form-control" value="5" min="1" max="25" />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label>Formula Expression (Uses variables: runs, balls, strike_rate, dot_ball_pct, hl_adj_lwwpa, wickets, economy, death_economy, pfr)</label>
+            <input type="text" id="new-stat-formula" class="form-control" placeholder="e.g. min(100.0, max(20.0, (strike_rate / 1.5) + (hl_adj_lwwpa * 4.0)))" required />
+            <span style="font-size: 0.72rem; color: var(--text-muted);">Formulas evaluate dynamically in JavaScript Math context. Scale output to 0-100 range.</span>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label>Description / Rationale</label>
+            <input type="text" id="new-stat-desc" class="form-control" placeholder="Explain what this metric proves under pressure..." />
+          </div>
+
+          <button type="submit" class="btn btn-primary">+ Save &amp; Apply Metric to Leaderboard</button>
+        </form>
+      </div>
+
+      <!-- Active Custom Stats List -->
+      <h3 style="margin-bottom: 1rem;">Active Custom Statistics &amp; Extension Presets</h3>
+      <div id="custom-stats-list-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- ==================== TAB 6: TIER 3 MANUAL TAGS ==================== -->
+    <div id="view-tier3" class="tab-view" style="display: none; padding: 1.5rem 0;">
+      <div class="section-title-wrap">
+        <div>
+          <h2>Tier 3 Manual Tagging &amp; Audit Verification</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Admin-verified tags for rare physical and psychological events (played through injury, dropped catches) with citation proof.</p>
+        </div>
+      </div>
+
+      <!-- Submission Form -->
+      <div class="custom-stat-card">
+        <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: #fff;">Submit Verified Pressure Tag</h3>
+        <form onsubmit="window.ClutchApp.submitTier3Tag(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Player Name</label>
+              <input type="text" id="tag-player-name" class="form-control" placeholder="e.g. Shane Watson" required />
+            </div>
+            <div class="form-group">
+              <label>Tag Category</label>
+              <select id="tag-category" class="custom-select" style="width: 100%;">
+                <option value="INJURY_PLAYED_THROUGH">Played Through Injury</option>
+                <option value="PRESSURE_CATCH_DROP">High-Leverage Dropped Catch</option>
+                <option value="TACTICAL_CLUTCH_OVER">Tactical Clutch Death Over</option>
+                <option value="TACTICAL_SACRIFICE">Tactical Strike Sacrifice</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Verified Evidence URL (Scorecard / Video / Report)</label>
+              <input type="url" id="tag-evidence-url" class="form-control" placeholder="https://www.iplt20.com/video/..." required />
+            </div>
+            <div class="form-group">
+              <label>Bonus Multiplier</label>
+              <select id="tag-bonus" class="custom-select" style="width: 100%;">
+                <option value="1.15">+15% High-Impact Bonus</option>
+                <option value="1.10">+10% Moderate Bonus</option>
+                <option value="1.05">+5% Minor Bonus</option>
+                <option value="0.90">-10% Penalty (Lapse)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label>Match Context &amp; Incident Description</label>
+            <input type="text" id="tag-description" class="form-control" placeholder="Describe the physical condition, match context, and specific over/ball..." required />
+          </div>
+
+          <button type="submit" class="btn btn-pink">Submit for Audit Approval</button>
+        </form>
+      </div>
+
+      <!-- Audit Log Table -->
+      <h3 style="margin-bottom: 1rem;">Admin-Approved Pressure Tags Log</h3>
+      <div class="table-container">
+        <table class="analytics-table">
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Tag Type</th>
+              <th>Incident Details</th>
+              <th>Verified Source</th>
+              <th>Impact</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tier3-tbody">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== PLAYER PROFILE MODAL ==================== -->
+  <div id="player-modal" class="modal-overlay" onclick="if(event.target === this) window.ClutchApp.closePlayerModal()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2 id="modal-player-name" style="font-size: 1.5rem;">Player Profile</h2>
+          <div id="modal-player-role-badge" style="font-size: 0.8rem; color: var(--text-muted);">Batter • Gold Confidence</div>
+        </div>
+        <button class="modal-close-btn" onclick="window.ClutchApp.closePlayerModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="profile-hero">
+          <!-- Canvas Radar Visualizer -->
+          <div class="radar-canvas-container">
+            <canvas id="radar-canvas" width="340" height="340" style="max-width: 100%;"></canvas>
+          </div>
+
+          <!-- Overall Summary Cards -->
+          <div>
+            <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <div>
+                  <div id="modal-clutch-score" class="score-num" style="font-size: 2.75rem;">80.3</div>
+                  <div class="score-label">OVERALL CLUTCH INDEX (0-100)</div>
+                </div>
+                <div style="text-align: right;">
+                  <div id="modal-adj-lwwpa" style="font-size: 1.35rem; font-weight: 800; font-family: var(--font-mono); color: var(--accent-cyan);">+7.26</div>
+                  <div class="score-label">ADJUSTED lwWPA</div>
+                </div>
+              </div>
+            </div>
+
+            <p style="font-size: 0.825rem; color: var(--text-secondary); line-height: 1.6;">
+              Evaluated across high-leverage deliveries with Empirical Bayes shrinkage applied to regress small sample sizes toward baseline expectations.
+            </p>
+
+            <!-- Subscores progress list -->
+            <div id="modal-subscores-container" class="subscores-bar-list">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Landmark Pressure Moments -->
+        <h4 class="top-moments-title">Landmark Pressure Performances (High lwWPA)</h4>
+        <div id="modal-moments-container" class="moments-list">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Math Explanation Drawer -->
+        <div style="background: rgba(0,242,254,0.05); border: 1px solid rgba(0,242,254,0.2); border-radius: var(--radius-md); padding: 1rem; margin-top: 1.5rem;">
+          <h5 style="color: var(--accent-cyan); margin-bottom: 0.4rem;">🔬 "Explain This Score" Breakdown</h5>
+          <p style="font-size: 0.775rem; color: var(--text-secondary);">
+            The composite clutch index blends: On-Field lwWPA Impact (35%), Consistency &amp; Reliability (20%), Big-Match Knockouts (15%), Losing-Cause Resistance (10%), Phase Mastery (10%), Pressure Fielding (5%), and Team-First Sacrifices (5%). Shrunk with empirical Bayes (K=18).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Fallbacks & Offline Bundles -->
+  <script src="data/clutch_analytics_data.js"></script>
+  <script src="data/ipl_alltime_analytics.js"></script>
+  <script src="data/t20i_alltime_analytics.js"></script>
+  <script src="data/custom_stats.js"></script>
+  <script src="data/tier3_tags.js"></script>
+  <!-- Platform Engines -->
+  <script src="js/radar.js"></script>
+  <script src="js/timeline.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
